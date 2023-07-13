@@ -17,7 +17,7 @@ def onlylocal(remotesongytids, localmusicdir):
     localfiles = []
     localytids = []
     for file in files:
-        if os.path.isfile(os.path.join(localmusicdir, file)):
+        if file.is_file():
             filename = file.name
             ytid = filename.split(').')[0].split('(')[-1]
             if ytid not in remotesongytids:

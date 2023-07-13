@@ -16,7 +16,7 @@ def notdownloaded(localmusicdir, remotesongs):
     localytids = []
     files = os.scandir(localmusicdir)
     for file in files:
-        if os.path.isfile(os.path.join(localmusicdir, file)):
+        if file.is_file():
             filename = file.name
             ytid = filename.split(').')[0].split('(')[-1]
             localytids.append(ytid)

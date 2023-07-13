@@ -19,9 +19,9 @@ unmusicdir = "/media/storage/Music/archive"
 ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
 
 
-def responsetext(response):
-    return response["actions"][0]["addToToastAction"]["item"][
-            "notificationActionRenderer"]["responseText"]["runs"][0]["text"]
+def getresponsetext(resp):
+    resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
+    return list(resptext.values())[0]["runs"][0]["text"]
 
 lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
@@ -80,22 +80,22 @@ for i in range(numnotlikedlbsongs):
         remtoken = song["feedbackTokens"]["add"]
         response = ytmusic.edit_song_library_status(remtoken)
     except:
-        print(f"[{ytid}] The song isn't really in library!")
+        print(f"Warning: [{ytid}] isn't really in library!")
         print(f'\thttps://music.youtube.com/watch?v={ytid}')
         continue
-    if responsetext(response) != "Removed from library":
-        print(f'[{ytid}] The song got removed from library! Trying to fix...')
+    if getresponsetext(response) != "Removed from library":
+        print(f'Warning: [{ytid}] got added to library! Trying to fix...')
         remtoken = song["feedbackTokens"]["remove"]
         response = ytmusic.edit_song_library_status(remtoken)
-        if responsetext(response) != "Removed from library":
-            print(f'Error: Something went wrong while adding [{ytid}] to library!')
+        if getresponsetext(response) != "Removed from library":
+            print(f"Error: couldn't remove [{ytid}] from library!")
             sys.exit(1)
 
 
 print("\n\n4...")
 files = list(os.scandir(unmusicdir))
 for file in files:
-    if os.path.isfile(os.path.join(unmusicdir, file)):
+    if file.is_file():
         filename = file.name
         ytid = filename.split(').')[0].split('(')[-1]
         if ytid in lkytids:
@@ -109,16 +109,16 @@ numfiles = len(list(files))
 for i in range(numfiles):
 #   print(i+1, numfiles)
     file = files[i]
-    if os.path.isfile(os.path.join(unmusicdir, file)):
+    if file.is_file():
         filename = file.name
         ytid = filename.split(').')[0].split('(')[-1]
         if ytid not in unytids:
             if ytid in lbalbumytids:
-                print(f'[{ytid}] "{filename}" is in some album in the library. Are you sure it should be in archives!')
+                print(f'Warning: "{filename}" is in some album in the library. Are you sure it should be in archives?')
             try:
                 ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=True)
             except Exception as e:
-                print(f'[{ytid}] Something is wrong with "{filename}"...')
+                print(f'Warning: something is wrong with "{filename}"...')
                 print(e)
                 print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
                 continue
