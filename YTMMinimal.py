@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from ytmusicapi import YTMusic
 import os
 import re
