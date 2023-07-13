@@ -14,13 +14,28 @@ ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
 
 def onlylocal(remotesongytids, localmusicdir):
     files = os.scandir(localmusicdir)
+    localfiles = []
+    localytids = []
     for file in files:
         if os.path.isfile(os.path.join(localmusicdir, file)):
             filename = file.name
             ytid = filename.split(').')[0].split('(')[-1]
             if ytid not in remotesongytids:
-                print(filename)
-                print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
+                localytids.append(ytid)
+                localfiles.append(file)
+    numlocalytids = len(localytids)
+    for i in range(numlocalytids):
+        file = localfiles[i]
+        ytid = localytids[i]
+        print(i+1, numlocalytids, file.name)
+        print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
+        rm = input("Remove file? [Y/n]: ")
+        rm = rm.strip()
+        if rm != 'n' and rm != 'N':
+            os.remove(file)
+            print("File removed, continuing...")
+        else:
+            print("Continuing...")
 
 
 print('Liked Songs...')
