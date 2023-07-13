@@ -80,15 +80,15 @@ for i in range(numnotlikedlbsongs):
         remtoken = song["feedbackTokens"]["add"]
         response = ytmusic.edit_song_library_status(remtoken)
     except:
-        print(f'[{ytid}] not really in the library!')
+        print(f"[{ytid}] The song isn't really in library!")
         print(f'\thttps://music.youtube.com/watch?v={ytid}')
         continue
     if responsetext(response) != "Removed from library":
-        print(f'[{ytid}] The song got removed from the library! Trying to fix.')
+        print(f'[{ytid}] The song got removed from library! Trying to fix...')
         remtoken = song["feedbackTokens"]["remove"]
         response = ytmusic.edit_song_library_status(remtoken)
         if responsetext(response) != "Removed from library":
-            print(f'[{ytid}] Some error occured, exiting...')
+            print(f'Error: Something went wrong while adding [{ytid}] to library!')
             sys.exit(1)
 
 
@@ -118,7 +118,7 @@ for i in range(numfiles):
             try:
                 ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=True)
             except Exception as e:
-                print(f'[{ytid}] something is wrong with "{filename}"')
+                print(f'[{ytid}] Something is wrong with "{filename}"...')
                 print(e)
                 print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
                 continue

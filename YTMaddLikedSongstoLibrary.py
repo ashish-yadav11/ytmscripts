@@ -24,7 +24,7 @@ for i in range(numlksongs):
     except:
         continue
     if responsetext(response) != "Added to library":
-        print(f'[{ytid}] The song got removed from the library! Trying to fix.')
+        print(f'[{ytid}] The song got removed from library! Trying to fix...')
         addtoken = song["feedbackTokens"]["add"]
         response = ytmusic.edit_song_library_status(addtoken)
         if responsetext(response) != "Added to library":
