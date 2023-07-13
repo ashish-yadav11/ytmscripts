@@ -6,6 +6,10 @@ import string
 ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
 
 
+def responsetext(response):
+    return response["actions"][0]["addToToastAction"]["item"][
+            "notificationActionRenderer"]["responseText"]["runs"][0]["text"]
+
 lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
 
@@ -19,14 +23,10 @@ for i in range(numlksongs):
         response = ytmusic.edit_song_library_status(addtoken)
     except:
         continue
-    responsetext = response["actions"][0]["addToToastAction"]["item"]["notificationActionRenderer"]["responseText"]["runs"][0]["text"]
-    if responsetext == "Added to library":
-        continue
-    elif responsetext == "Removed from library":
+    if responsetext(response) != "Added to library":
         print(f'[{ytid}] The song got removed from the library! Trying to fix.')
         addtoken = song["feedbackTokens"]["add"]
         response = ytmusic.edit_song_library_status(addtoken)
-        responsetext = response["actions"][0]["addToToastAction"]["item"]["notificationActionRenderer"]["responseText"]["runs"][0]["text"]
-        continue
-    else:
-        print(f'[{ytid}] Something went wrong!')
+        if responsetext(response) != "Added to library":
+            print(f'[{ytid}] Something went wrong!')
+            sys.exit(1)

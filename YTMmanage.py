@@ -19,6 +19,10 @@ unmusicdir = "/media/storage/Music/archive"
 ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
 
 
+def responsetext(response):
+    return response["actions"][0]["addToToastAction"]["item"][
+            "notificationActionRenderer"]["responseText"]["runs"][0]["text"]
+
 lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
 lkytids = [song["videoId"] for song in lksongs]
@@ -79,14 +83,11 @@ for i in range(numnotlikedlbsongs):
         print(f'[{ytid}] not really in the library!')
         print(f'\thttps://music.youtube.com/watch?v={ytid}')
         continue
-
-    responsetext = response["actions"][0]["addToToastAction"]["item"]["notificationActionRenderer"]["responseText"]["runs"][0]["text"]
-    if responsetext != "Removed from library":
+    if responsetext(response) != "Removed from library":
         print(f'[{ytid}] The song got removed from the library! Trying to fix.')
         remtoken = song["feedbackTokens"]["remove"]
         response = ytmusic.edit_song_library_status(remtoken)
-        responsetext = response["actions"][0]["addToToastAction"]["item"]["notificationActionRenderer"]["responseText"]["runs"][0]["text"]
-        if responsetext != "Removed from library":
+        if responsetext(response) != "Removed from library":
             print(f'[{ytid}] Some error occured, exiting...')
             sys.exit(1)
 
