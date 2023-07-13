@@ -89,8 +89,10 @@ for i in range(numnotlikedlbsongs):
         print(f'Warning: [{ytid}] got added to library! Trying to fix...')
         remtoken = song["feedbackTokens"]["remove"]
         response = ytmusic.edit_song_library_status(remtoken)
-        if getresponsetext(response) != "Removed from library":
+        responsetext = getresponsetext(response)
+        if responsetext != "Removed from library":
             print(f"Error: couldn't remove [{ytid}] from library!")
+            print(f'The response was: "{responsetext}"')
             sys.exit(1)
 
 

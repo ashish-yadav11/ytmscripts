@@ -66,8 +66,10 @@ if not skip and getresponsetext(response) != "Added to library":
 #   print(f'Warning: [{ytid}] got removed from library! Trying to fix...')
     addtoken = song["feedbackTokens"]["remove"]
     response = ytmusic.edit_song_library_status(addtoken)
-    if getresponsetext(response) != "Added to library":
+    responsetext = getresponsetext(response)
+    if responsetext != "Added to library":
         print(f"Error: couldn't add [{ytid}] to library!")
+        print(f'The response was: "{responsetext}"')
         sys.exit(1)
 
 # add to 'liked songs'

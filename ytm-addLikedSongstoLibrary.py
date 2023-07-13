@@ -29,6 +29,8 @@ for i in range(numlksongs):
         print(f'Warning: [{ytid}] got removed from library! Trying to fix...')
         addtoken = song["feedbackTokens"]["add"]
         response = ytmusic.edit_song_library_status(addtoken)
-        if getresponsetext(response) != "Added to library":
+        responsetext = getresponsetext(response)
+        if responsetext != "Added to library":
             print(f'Error: something went wrong while adding [{ytid}] to library!')
+            print(f'The response was: "{responsetext}"')
             sys.exit(1)
