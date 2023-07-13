@@ -120,13 +120,13 @@ if not found:
                             'preferredcodec': 'best',
                             'preferredquality': '0'}]
         }
-    ydl = YoutubeDL(ydlopts)
-    try:
-        ydl.download([ytid])
-    except Exception as e:
-        print('Error: downloading failed with the following error!')
-        print(e)
-        sys.exit(1)
+    with YoutubeDL(ydlopts) as ydl:
+        try:
+            ydl.download([ytid])
+        except Exception as e:
+            print('Error: downloading failed with the following error!')
+            print(e)
+            sys.exit(1)
 else:
     print('Notice: song already downloaded!')
 
