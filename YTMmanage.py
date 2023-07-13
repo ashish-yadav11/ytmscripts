@@ -25,9 +25,22 @@ lkytids = [song["videoId"] for song in lksongs]
 
 print("1...")
 lkplylst = ytmusic.get_playlist(lkplylstid, limit=9999)["tracks"]
-if len(lkplylst) > 0:
-    ytmusic.remove_playlist_items(lkplylstid, lkplylst)
-ytmusic.add_playlist_items(lkplylstid, lkytids, duplicates=False)
+lenlkplylst = len(lkplylst)
+step = 100
+num = 0
+while num < lenlkplylst:
+    print(num, lenlkplylst)
+    ytmusic.remove_playlist_items(lkplylstid, lkplylst[num:num+step])
+    num += step
+# 'duplicates=False' misbehaves, and anyway 'duplicates=True' is irrelevant
+# because we have emptied the playlist and we know there are not duplicates in
+# lkytids
+lenlkytids = len(lkytids)
+num = 0
+while num < lenlkytids:
+    print(num, lenlkytids)
+    ytmusic.add_playlist_items(lkplylstid, lkytids[num:num+step], duplicates=True)
+    num += step
 
 
 print("\n\n2...")
@@ -56,7 +69,7 @@ for i in range(numnotlikedlbsongs):
     ytid = song["videoId"]
 
     if ytid not in unytids:
-        ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
+        ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=True)
         unytids.append(ytid)
 
     try:
@@ -102,7 +115,7 @@ for i in range(numfiles):
             if ytid in lbalbumytids:
                 print(f'[{ytid}] "{filename}" is in some album in the library. Are you sure it should be in archives!')
             try:
-                ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
+                ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=True)
             except Exception as e:
                 print(f'[{ytid}] something is wrong with "{filename}"')
                 print(e)
