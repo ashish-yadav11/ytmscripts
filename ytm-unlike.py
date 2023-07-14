@@ -63,14 +63,18 @@ try:
 except:
     skip = True
 if not skip and getresponsetext(response) != "Removed from library":
-#   print(f'Warning: [{ytid}] got added to library! Trying to fix...')
+    print(f'Warning: [{ytid}] got added to library! Trying to fix...')
     remtoken = song["feedbackTokens"]["add"]
     response = ytmusic.edit_song_library_status(remtoken)
-    responsetext = getresponsetext(response)
-    if responsetext != "Removed from library":
-        print(f'Error: something went wrong while removing [{ytid}] from library!')
-        print(f'The response was: "{responsetext}"')
-        sys.exit(1)
+    if getresponsetext(response) != "Removed from library":
+        print(f'Retrying...')
+        remtoken = song["feedbackTokens"]["remove"]
+        response = ytmusic.edit_song_library_status(remtoken)
+        responsetext = getresponsetext(response)
+        if responsetext != "Removed from library":
+            print(f'Error: something went wrong while removing [{ytid}] from library!')
+            print(f'The response was: "{responsetext}"')
+            sys.exit(1)
 
 # cleanup 'liked songs'
 lkplylst = ytmusic.get_playlist(lkplylstid, limit=9999)["tracks"]
