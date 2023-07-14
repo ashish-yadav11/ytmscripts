@@ -15,7 +15,7 @@ vid="${url##*"/watch?v="}"
 
 read -r apikey <"$apikeyfile"
 
-if title="$(curl -s "https://www.googleapis.com/youtube/v3/videos?id=$vid&key=$apikey&fields=items(snippet(title))&part=snippet")" ; then
+if ! title="$(curl -s "https://www.googleapis.com/youtube/v3/videos?id=$vid&key=$apikey&fields=items(snippet(title))&part=snippet")" ; then
     echo "Error: something went wrong!"
     exit 1
 fi
