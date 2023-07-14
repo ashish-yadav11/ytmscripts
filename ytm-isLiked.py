@@ -35,7 +35,7 @@ if song["videoId"] != ytid:
     print("Error: something is wrong, ytid's don't match!")
     sys.exit(1)
 
-if song["likeStatus"] != "LIKE":
+if song["likeStatus"] == "LIKE":
     print('1')
     sys.exit(0)
 else:
