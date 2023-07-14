@@ -14,7 +14,7 @@ unmusicdir = "/media/storage/Music/archive"
 ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
 
 
-def notdownloaded(localmusicdir, remotesongs):
+def onlyremote(localmusicdir, remotesongs):
     localytids = []
     files = os.scandir(localmusicdir)
     for file in files:
@@ -34,9 +34,9 @@ print('Liked Songs...')
 
 lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
-notdownloaded(lkmusicdir, lksongs)
+onlyremote(lkmusicdir, lksongs)
 
 print('Unliked Liked Songs...')
 
 unsongs = ytmusic.get_playlist(unplylstid, limit=9999)["tracks"]
-notdownloaded(unmusicdir, unsongs)
+onlyremote(unmusicdir, unsongs)
