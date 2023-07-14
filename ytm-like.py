@@ -54,15 +54,16 @@ if song["likeStatus"] != "LIKE":
         sys.exit(1)
 else:
     print("Notice: song already liked!")
+    sys.exit(0)
 
 # add to library
-skip = False
+isvideo = False
 try:
     addtoken = song["feedbackTokens"]["add"]
     response = ytmusic.edit_song_library_status(addtoken)
 except:
-    skip = True
-if not skip and getresponsetext(response) != "Added to library":
+    isvideo = True
+if not isvideo and getresponsetext(response) != "Added to library":
 #   print(f'Warning: [{ytid}] got removed from library! Trying to fix...')
     addtoken = song["feedbackTokens"]["remove"]
     response = ytmusic.edit_song_library_status(addtoken)
