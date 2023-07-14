@@ -7,11 +7,11 @@ import random
 import string
 import sys
 
-# 1. moves liked songs to the 'Liked Songs' playlist (after clearing it first)
+# 1. move liked songs to the 'Liked Songs' playlist (after clearing it first)
 # 2. remove "now liked" songs from 'Unliked Liked Songs' playlist
-# 3. moves "not liked but in library" to 'Unliked Liked Songs' playlist (just appending), removes them from library
+# 3. move "not liked but in library" to 'Unliked Liked Songs' playlist (just appending), remove them from library
 # 4. remove "now liked" songs from /media/storage/Music/archives/
-# 5. adds songs in /media/storage/Music/archives/ to 'Unliked Liked Songs' playlist (if they are not already there)
+# 5. add songs in /media/storage/Music/archives/ to 'Unliked Liked Songs' playlist (if they are not already there)
 
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
