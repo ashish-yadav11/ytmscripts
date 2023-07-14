@@ -6,12 +6,11 @@ import re
 import random
 import string
 
+oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
-
-ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
 
 
 def onlyremote(localmusicdir, remotesongs):
@@ -29,14 +28,13 @@ def onlyremote(localmusicdir, remotesongs):
             print(remotesongs[i]["title"])
             print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
 
+ytmusic = YTMusic(oauthfile)
 
 print('Liked Songs...')
-
 lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
 onlyremote(lkmusicdir, lksongs)
 
 print('Unliked Liked Songs...')
-
 unsongs = ytmusic.get_playlist(unplylstid, limit=9999)["tracks"]
 onlyremote(unmusicdir, unsongs)

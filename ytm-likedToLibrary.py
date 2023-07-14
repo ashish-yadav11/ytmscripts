@@ -5,12 +5,14 @@ import re
 import random
 import string
 
-ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
+oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 
 
 def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
+
+ytmusic = YTMusic(oauthfile)
 
 lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))

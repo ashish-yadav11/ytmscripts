@@ -8,6 +8,7 @@ import random
 import string
 import sys
 
+oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
@@ -32,12 +33,11 @@ if (len(sys.argv) != 2):
 ytid = getid(sys.argv[1])
 
 
-ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
-
-
 def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
+
+ytmusic = YTMusic(oauthfile)
 
 # like
 song = ytmusic.get_watch_playlist(ytid, limit=1)["tracks"][0]

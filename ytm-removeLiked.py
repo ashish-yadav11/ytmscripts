@@ -7,8 +7,10 @@ import random
 import string
 import sys
 
+oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 lkmusicdir = "/media/storage/Music"
+
 
 def getid(source):
     idpatterns = [
@@ -29,8 +31,7 @@ if (len(sys.argv) != 2):
 ytid = getid(sys.argv[1])
 
 
-ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
-
+ytmusic = YTMusic(oauthfile)
 
 lkplylst = ytmusic.get_playlist(lkplylstid, limit=9999)["tracks"]
 for song in lkplylst:

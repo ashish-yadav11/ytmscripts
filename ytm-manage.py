@@ -13,17 +13,18 @@ import sys
 # 4. remove "now liked" songs from /media/storage/Music/archives/
 # 5. add songs in /media/storage/Music/archives/ to 'Unliked Liked Songs' playlist (if they are not already there)
 
+oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
 
-ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
-
 
 def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
+
+ytmusic = YTMusic(oauthfile)
 
 lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
