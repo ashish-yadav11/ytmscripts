@@ -1,6 +1,6 @@
 #!/bin/sh
-oauthfile="/home/ashish/.config/ytmusic-oauth.json"
-ytmauthhack_script="ytm-authorizationHack"
+oauthfile="/home/ashish/.config/youtube-oauth.json"
+tokenrefresh="ytm-tokenRefresh"
 
 case "$#" in
     1) url="$1" ;;
@@ -15,28 +15,26 @@ url="${url%%&*}"
 vid="${url##*"/watch?v="}"
 
 readoauthfile() {
-    {
-        read -r dummy
-        read -r accesstoken
-        read -r dummy; read -r dummy; read -r dummy; read -r dummy
-        read -r expiresat
-    } <"$oauthfile"
-    accesstoken="${accesstoken%\"*}"
-    accesstoken="${accesstoken##*': "'}"
-    expiresat="${expiresat%,*}"
-    expiresat="${expiresat##*": "}"
+    read -r token <"$oauthfile"
+    accesstoken="${token#*'"token": "'}"
+    accesstoken="${accesstoken%%'", "'*}"
+    expiresat="${token##*'"expiry": "'}"
+    expiresat="${expiresat%'"}'*}"
+    expiresat="$(date "+%s" --date="$expiresat")"
 }
 
 readoauthfile
-if [ "$(( expiresat - 1 ))" -lt "$(date +%s)" ] ; then
-    echo "Notice: doing authorization hack!"
-    $ytmauthhack_script
+if [ "$(( expiresat - 10 ))" -lt "$(date +%s)" ] ; then
+    if ! $tokenrefresh ; then
+        echo "Error: something went wrong while refreshing access token!"
+        exit 2
+    fi
     readoauthfile
 fi
 
 if ! output="$(curl -s "https://youtube.googleapis.com/youtube/v3/videos/getRating?id=$vid" \
                 --header "Authorization: Bearer $accesstoken")" ; then
-    echo "Error: something went wrong!"
+    echo "Error: something went wrong with curl!"
     exit 2
 fi
 
@@ -47,7 +45,7 @@ elif echo "$output" | grep -qm1 '"rating": "' ; then
     echo 0
     exit 1
 else
-    echo "Error: something went wrong!"
+    echo "Error: something went wrong with curl!"
     echo "curl output:"
     echo "$output"
     exit 2
