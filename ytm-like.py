@@ -93,24 +93,26 @@ for song in unplylst:
 # cleanup 'archive'
 files = list(os.scandir(unmusicdir))
 for file in files:
-    if file.is_file():
-        filename = file.name
-        lclytid = filename.split(').')[0].split('(')[-1]
-        if lclytid == ytid:
-            print(f'Notice: "{filename}" now liked, moving to music...')
-            os.rename(file, os.path.join(lkmusicdir, filename))
-            sys.exit(exitcode)
+    if not file.is_file():
+        continue
+    filename = file.name
+    lclytid = filename.split(').')[0].split('(')[-1]
+    if lclytid == ytid:
+        print(f'Notice: "{filename}" now liked, moving to music...')
+        os.rename(file, os.path.join(lkmusicdir, filename))
+        sys.exit(exitcode)
 
 # see if already downloaded
 found = False
 files = list(os.scandir(lkmusicdir))
 for file in files:
-    if file.is_file():
-        filename = file.name
-        lclytid = filename.split(').')[0].split('(')[-1]
-        if lclytid == ytid:
-            found = True
-            break
+    if not file.is_file():
+        continue
+    filename = file.name
+    lclytid = filename.split(').')[0].split('(')[-1]
+    if lclytid == ytid:
+        found = True
+        break
 if not found:
     downloadfailed = False
     # download with yt-dlp

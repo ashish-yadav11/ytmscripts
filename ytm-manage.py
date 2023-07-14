@@ -15,7 +15,7 @@ import sys
 
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
-#lkmusicdir = "/media/storage/Music"
+lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
 
 ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
@@ -99,12 +99,13 @@ for i in range(numnotlikedlbsongs):
 print("\n\n4...")
 files = list(os.scandir(unmusicdir))
 for file in files:
-    if file.is_file():
-        filename = file.name
-        ytid = filename.split(').')[0].split('(')[-1]
-        if ytid in lkytids:
-            print(f'"{filename}" now liked, deleting...')
-            os.remove(file)
+    if not file.is_file():
+        continue
+    filename = file.name
+    ytid = filename.split(').')[0].split('(')[-1]
+    if ytid in lkytids:
+        print(f'"{filename}" now liked, deleting...')
+        os.remove(file)
 
 
 print("\n\n5...")
@@ -113,16 +114,17 @@ numfiles = len(list(files))
 for i in range(numfiles):
 #   print(i+1, numfiles)
     file = files[i]
-    if file.is_file():
-        filename = file.name
-        ytid = filename.split(').')[0].split('(')[-1]
-        if ytid not in unytids:
-            if ytid in lbalbumytids:
-                print(f'Warning: "{filename}" is in some album in the library. Are you sure it should be in archives?')
-            try:
-                ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=True)
-            except Exception as e:
-                print(f'Warning: something is wrong with "{filename}"...')
-                print(e)
-                print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
-                continue
+    if not file.is_file():
+        continue
+    filename = file.name
+    ytid = filename.split(').')[0].split('(')[-1]
+    if ytid not in unytids:
+        if ytid in lbalbumytids:
+            print(f'Warning: "{filename}" is in some album in the library. Are you sure it should be in archives?')
+        try:
+            ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=True)
+        except Exception as e:
+            print(f'Warning: something is wrong with "{filename}"...')
+            print(e)
+            print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
+            continue

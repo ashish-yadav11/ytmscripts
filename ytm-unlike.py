@@ -87,21 +87,21 @@ for song in lkplylst:
 # cleanup 'music'
 files = list(os.scandir(lkmusicdir))
 for file in files:
-    if file.is_file():
-        filename = file.name
-        lclytid = filename.split(').')[0].split('(')[-1]
-        if lclytid == ytid:
-            print(f'Notice: "{filename}" now not liked, moving to archive...')
-            os.rename(file, os.path.join(unmusicdir, filename))
-            break
-
-# add to 'unliked liked songs'
-try:
-    ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
-except Exception as e:
-    print("Warning: couldn't add [{ytid}] to 'Liked Songs' playlist!")
-    print(e)
-    print()
-    sys.exit(1)
+    if not file.is_file():
+        continue
+    filename = file.name
+    lclytid = filename.split(').')[0].split('(')[-1]
+    if lclytid == ytid:
+        print(f'Notice: "{filename}" now not liked, moving to archive...')
+        os.rename(file, os.path.join(unmusicdir, filename))
+        # add to 'unliked liked songs'
+        try:
+            ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
+        except Exception as e:
+            print("Warning: couldn't add [{ytid}] to 'Liked Songs' playlist!")
+            print(e)
+            print()
+            sys.exit(1)
+        break
 
 sys.exit(0)

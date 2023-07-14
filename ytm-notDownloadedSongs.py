@@ -6,7 +6,7 @@ import re
 import random
 import string
 
-#lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
+lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
@@ -18,10 +18,11 @@ def notdownloaded(localmusicdir, remotesongs):
     localytids = []
     files = os.scandir(localmusicdir)
     for file in files:
-        if file.is_file():
-            filename = file.name
-            ytid = filename.split(').')[0].split('(')[-1]
-            localytids.append(ytid)
+        if not file.is_file():
+            continue
+        filename = file.name
+        ytid = filename.split(').')[0].split('(')[-1]
+        localytids.append(ytid)
     for i in range(len(remotesongs)):
         ytid = remotesongs[i]["videoId"]
         if ytid not in localytids:

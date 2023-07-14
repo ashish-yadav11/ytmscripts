@@ -15,14 +15,16 @@ ytmusic = YTMusic("/home/ashish/.config/ytmusic-oauth.json")
 lcllkytids = []
 files = list(os.scandir(lkmusicdir))
 for file in files:
-    if file.is_file():
-        filename = file.name
-        ytid = filename.split(').')[0].split('(')[-1]
-        lcllkytids.append(ytid)
+    if not file.is_file():
+        continue
+    filename = file.name
+    ytid = filename.split(').')[0].split('(')[-1]
+    lcllkytids.append(ytid)
 lclunytids = []
 files = list(os.scandir(unmusicdir))
 for file in files:
-    if file.is_file():
-        filename = file.name
-        ytid = filename.split(').')[0].split('(')[-1]
-        lclunytids.append(ytid)
+    if not file.is_file():
+        continue
+    filename = file.name
+    ytid = filename.split(').')[0].split('(')[-1]
+    lclunytids.append(ytid)
