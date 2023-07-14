@@ -3,7 +3,7 @@ apikeyfile="/home/ashish/.config/youtube-apikey.txt"
 
 case "$#" in
     1) url="$1" ;;
-    *) echo "Usage: ytm-title [url]"; exit 2 ;;
+    *) echo "Usage: ytb-title [url]"; exit 2 ;;
 esac
 if ! echo "$url" | grep -qm1 \
         "^https://\(music\|www\)\.youtube\.com/watch?v=...........\($\|&\)" ; then

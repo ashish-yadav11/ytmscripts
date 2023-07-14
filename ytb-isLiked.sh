@@ -1,10 +1,10 @@
 #!/bin/sh
 oauthfile="/home/ashish/.config/youtube-oauth.json"
-tokenrefresh="ytm-tokenRefresh"
+tokenrefresh="ytb-tokenRefresh"
 
 case "$#" in
     1) url="$1" ;;
-    *) echo "Usage: ytm-isLiked [url]"; exit 2 ;;
+    *) echo "Usage: ytb-isLiked [url]"; exit 2 ;;
 esac
 if ! echo "$url" | grep -qm1 \
         "^https://\(music\|www\)\.youtube\.com/watch?v=...........\($\|&\)" ; then
