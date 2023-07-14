@@ -23,6 +23,7 @@ readoauthfile() {
     } <"$oauthfile"
     accesstoken="${accesstoken%\"*}"
     accesstoken="${accesstoken##*': "'}"
+    expiresat="${expiresat%,*}"
     expiresat="${expiresat##*": "}"
 }
 
