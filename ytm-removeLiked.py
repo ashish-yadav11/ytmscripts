@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 from ytmusicapi import YTMusic
-from yt_dlp import YoutubeDL
 import os
 import re
 import random
