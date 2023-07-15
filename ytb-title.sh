@@ -21,5 +21,5 @@ if ! title="$(curl -s "https://www.googleapis.com/youtube/v3/videos?id=$vid&key=
 fi
 title="${title#*'"title": "'}"
 title="${title%\"*}"
-echo "$title [$vid]"
+echo "$title"
 exit 0
