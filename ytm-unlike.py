@@ -28,7 +28,7 @@ def getid(source):
 
 remove = False
 args = sys.argv
-if len(args) >= 2 && args[1] == '-r':
+if len(args) >= 2 and args[1] == '-r':
     remove = True
     args = args[1:]
 
