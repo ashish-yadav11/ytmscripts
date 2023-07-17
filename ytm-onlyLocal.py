@@ -39,7 +39,12 @@ def onlylocal(remotesongytids, localmusicdir):
         else:
             print("Continuing...")
 
-ytmusic = YTMusic(oauthfile)
+try:
+    ytmusic = YTMusic(oauthfile)
+except Exception as e:
+    print('Error: YTMusic() failed with the following error!')
+    print(e)
+    sys.exit(1)
 
 print('Liked Songs...')
 lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]

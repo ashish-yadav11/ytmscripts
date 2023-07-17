@@ -36,7 +36,12 @@ def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
 
-ytmusic = YTMusic(oauthfile)
+try:
+    ytmusic = YTMusic(oauthfile)
+except Exception as e:
+    print('Error: YTMusic() failed with the following error!')
+    print(e)
+    sys.exit(1)
 
 # like
 song = ytmusic.get_watch_playlist(ytid, limit=1)["tracks"][0]

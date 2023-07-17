@@ -30,7 +30,12 @@ if len(sys.argv) != 2:
 ytid = getid(sys.argv[1])
 
 
-ytmusic = YTMusic(oauthfile)
+try:
+    ytmusic = YTMusic(oauthfile)
+except Exception as e:
+    print('Error: YTMusic() failed with the following error!')
+    print(e)
+    sys.exit(1)
 
 lkplylst = ytmusic.get_playlist(lkplylstid, limit=9999)["tracks"]
 for song in lkplylst:
