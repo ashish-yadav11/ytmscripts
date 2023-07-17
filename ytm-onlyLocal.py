@@ -31,11 +31,11 @@ def onlylocal(remotesongytids, localmusicdir):
         ytid = localytids[i]
         print(i+1, numlocalytids, file.name)
         print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
-        rm = input("Remove file? [Y/n]: ")
+        rm = input("Delete file? [Y/n]: ")
         rm = rm.strip()
         if rm != 'n' and rm != 'N':
             os.remove(file)
-            print("File removed, continuing...")
+            print("File deleted, continuing...")
         else:
             print("Continuing...")
 
