@@ -26,11 +26,16 @@ def getid(source):
     print(f'Error: unable to get ID from "{source}"!')
     sys.exit(1)
 
-if (len(sys.argv) != 2):
-    print("Error: incorrect usage!")
-    sys.exit(1)
+remove = False
+args = sys.argv
+if len(args) >= 2 && args[1] == '-r':
+    remove = True
+    args = args[1:]
 
-ytid = getid(sys.argv[1])
+if len(args) != 2:
+     print("Error: incorrect usage!")
+     sys.exit(1)
+ytid = getid(args[1])
 
 
 def getresponsetext(resp):
@@ -93,16 +98,20 @@ for file in files:
     filename = file.name
     lclytid = filename.split(').')[0].split('(')[-1]
     if lclytid == ytid:
-        print(f'Notice: "{filename}" now not liked, moving to archive...')
-        os.rename(file, os.path.join(unmusicdir, filename))
-        # add to 'unliked liked songs'
-        try:
-            ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
-        except Exception as e:
-            print("Warning: couldn't add [{ytid}] to 'Liked Songs' playlist!")
-            print(e)
-            print()
-            sys.exit(1)
-        break
+        if remove:
+            print(f'Notice: "{filename}" now not liked, deleting...')
+            os.remove(file, os.path.join(unmusicdir, filename))
+        else:
+            print(f'Notice: "{filename}" now not liked, moving to archive...')
+            os.rename(file, os.path.join(unmusicdir, filename))
+            # add to 'unliked liked songs'
+            try:
+                ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
+            except Exception as e:
+                print("Warning: couldn't add [{ytid}] to 'Liked Songs' playlist!")
+                print(e)
+                print()
+                sys.exit(1)
+            break
 
 sys.exit(0)

@@ -26,7 +26,7 @@ def getid(source):
     print(f'Error: unable to get ID from "{source}"!')
     sys.exit(1)
 
-if (len(sys.argv) != 2):
+if len(sys.argv) != 2:
     print("Error: incorrect usage!")
     sys.exit(1)
 
