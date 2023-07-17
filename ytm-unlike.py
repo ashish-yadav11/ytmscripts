@@ -1,17 +1,27 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic
-import os
 import re
-import random
-import string
+import os
 import sys
+from ytmusicapi import YTMusic
 
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
+
+
+def handleexception(funcname, e):
+    print(f'Error: {funcname}() failed with the following error!')
+    print(e)
+
+def call(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except Exception as e:
+        handleexception(f.__name__, e)
+        sys.exit(1)
 
 
 def getid(source):
@@ -33,8 +43,8 @@ if len(args) >= 2 and args[1] == '-r':
     args = args[1:]
 
 if len(args) != 2:
-     print("Error: incorrect usage!")
-     sys.exit(1)
+    print("Error: incorrect usage!")
+    sys.exit(1)
 ytid = getid(args[1])
 
 
@@ -42,21 +52,16 @@ def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
 
-try:
-    ytmusic = YTMusic(oauthfile)
-except Exception as e:
-    print('Error: YTMusic() failed with the following error!')
-    print(e)
-    sys.exit(1)
+ytmusic = call(YTMusic, oauthfile)
 
 # unlike
-song = ytmusic.get_watch_playlist(ytid, limit=1)["tracks"][0]
+song = call(ytmusic.get_watch_playlist, ytid, limit=1)["tracks"][0]
 if song["videoId"] != ytid:
     print("Error: something is wrong, ytid's don't match!")
     sys.exit(1)
 
 if song["likeStatus"] == "LIKE":
-    response = ytmusic.rate_song(ytid, "INDIFFERENT")
+    response = call(ytmusic.rate_song, ytid, "INDIFFERENT")
     responsetext = getresponsetext(response)
     if responsetext != "Removed from your likes":
         print("Error: couldn't remove [{ytid}] from liked songs!")
@@ -67,28 +72,26 @@ else:
     sys.exit(0)
 
 # remove from library
-isvideo = False
-try:
+if "feedbackTokens" in song and "add" in song["feedbackTokens"]:
     remtoken = song["feedbackTokens"]["add"]
-    response = ytmusic.edit_song_library_status(remtoken)
-except:
-    isvideo = True
-if not isvideo and getresponsetext(response) != "Removed from library":
-    print(f'Warning: [{ytid}] got added to library! Trying to fix...')
-    remtoken = song["feedbackTokens"]["remove"]
-    response = ytmusic.edit_song_library_status(remtoken)
-    responsetext = getresponsetext(response)
-    if responsetext != "Removed from library":
-        print(f'Error: something went wrong while removing [{ytid}] from library!')
-        print(f'The response was: "{responsetext}"')
-        sys.exit(1)
+    if remtoken:
+        response = call(ytmusic.edit_song_library_status, remtoken)
+        if getresponsetext(response) != "Removed from library":
+            print(f'Warning: [{ytid}] got added to library! Trying to fix...')
+            remtoken = song["feedbackTokens"]["remove"]
+            response = call(ytmusic.edit_song_library_status, remtoken)
+            responsetext = getresponsetext(response)
+            if responsetext != "Removed from library":
+                print(f'Error: something went wrong while removing [{ytid}] from library!')
+                print(f'The response was: "{responsetext}"')
+                sys.exit(1)
 
 # cleanup 'liked songs'
-lkplylst = ytmusic.get_playlist(lkplylstid, limit=9999)["tracks"]
+lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]
 for song in lkplylst:
     if song["videoId"] == ytid:
         print(f"Notice: removing [{ytid}] from 'Liked Songs'...")
-        ytmusic.remove_playlist_items(lkplylstid, [song])
+        call(ytmusic.remove_playlist_items, lkplylstid, [song])
         break
 
 # cleanup 'music'
@@ -109,7 +112,7 @@ for file in files:
             try:
                 ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
             except Exception as e:
-                print("Warning: couldn't add [{ytid}] to 'Liked Songs' playlist!")
+                print("Warning: couldn't add [{ytid}] to 'Unliked Liked Songs'!")
                 print(e)
                 print()
                 sys.exit(1)

@@ -20,30 +20,38 @@ lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
 
 
+def handleexception(funcname, e):
+    print(f'Error: {funcname}() failed with the following error!')
+    print(e)
+
+def call(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except Exception as e:
+        handleexception(f.__name__, e)
+        sys.exit(1)
+
+
 def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
 
-try:
-    ytmusic = YTMusic(oauthfile)
-except Exception as e:
-    print('Error: YTMusic() failed with the following error!')
-    print(e)
-    sys.exit(1)
+ytmusic = call(YTMusic, oauthfile)
 
-lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
+lksongs_p = call(ytmusic.get_liked_songs, limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
 lkytids = [song["videoId"] for song in lksongs]
 
 print("1...")
-lkplylst = ytmusic.get_playlist(lkplylstid, limit=9999)["tracks"]
+lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]
 lenlkplylst = len(lkplylst)
 step = 100
 num = 0
 while num < lenlkplylst:
     print(num, lenlkplylst)
-    ytmusic.remove_playlist_items(lkplylstid, lkplylst[num:num+step])
+    call(ytmusic.remove_playlist_items, lkplylstid, lkplylst[num:num+step])
     num += step
+
 # 'duplicates=False' misbehaves, and anyway 'duplicates=True' is irrelevant
 # because we have emptied the playlist and we know there are not duplicates in
 # lkytids
@@ -51,27 +59,27 @@ lenlkytids = len(lkytids)
 num = 0
 while num < lenlkytids:
     print(num, lenlkytids)
-    ytmusic.add_playlist_items(lkplylstid, lkytids[num:num+step], duplicates=True)
+    call(ytmusic.add_playlist_items, lkplylstid, lkytids[num:num+step], duplicates=True)
     num += step
 
 
 print("\n\n2...")
-unplylst = ytmusic.get_playlist(unplylstid, limit=9999)["tracks"]
+unplylst = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
 unytids_p = [song["videoId"] for song in unplylst]
 nowlikedsongs = list(filter(lambda s: s["videoId"] in lkytids, unplylst))
 if len(nowlikedsongs) > 0:
-    ytmusic.remove_playlist_items(unplylstid, nowlikedsongs)
+    call(ytmusic.remove_playlist_items, unplylstid, nowlikedsongs)
 unytids = list(filter(lambda s: s not in lkytids, unytids_p))
 
 
 print("\n\n3...")
 lbalbumytids = []
-lbalbums = ytmusic.get_library_albums(limit=9999)
+lbalbums = call(ytmusic.get_library_albums, limit=9999)
 for lbalbum in lbalbums:
-    album = ytmusic.get_album(lbalbum["browseId"])["tracks"]
+    album = call(ytmusic.get_album, lbalbum["browseId"])["tracks"]
     lbalbumytids.extend([song["videoId"] for song in album])
 
-lbsongs = ytmusic.get_library_songs(limit=9999)
+lbsongs = call(ytmusic.get_library_songs, limit=9999)
 notlikedlbsongs = list(filter(lambda s: s["videoId"] not in lkytids and s["videoId"] not in lbalbumytids, lbsongs))
 
 numnotlikedlbsongs = len(notlikedlbsongs)
@@ -81,20 +89,23 @@ for i in range(numnotlikedlbsongs):
     ytid = song["videoId"]
 
     if ytid not in unytids:
-        ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=True)
+        call(ytmusic.add_playlist_items, unplylstid, [ytid], duplicates=True)
         unytids.append(ytid)
 
-    try:
-        remtoken = song["feedbackTokens"]["add"]
-        response = ytmusic.edit_song_library_status(remtoken)
-    except:
+    if not "feedbackTokens" in song or not "add" in song["feedbackTokens"]:
         print(f"Warning: [{ytid}] isn't really in library!")
         print(f'\thttps://music.youtube.com/watch?v={ytid}')
         continue
+    remtoken = song["feedbackTokens"]["add"]
+    if not remtoken:
+        print(f"Warning: [{ytid}] isn't really in library!")
+        print(f'\thttps://music.youtube.com/watch?v={ytid}')
+        continue
+    response = call(ytmusic.edit_song_library_status, remtoken)
     if getresponsetext(response) != "Removed from library":
         print(f'Warning: [{ytid}] got added to library! Trying to fix...')
         remtoken = song["feedbackTokens"]["remove"]
-        response = ytmusic.edit_song_library_status(remtoken)
+        response = call(ytmusic.edit_song_library_status, remtoken)
         responsetext = getresponsetext(response)
         if responsetext != "Removed from library":
             print(f"Error: couldn't remove [{ytid}] from library!")
@@ -130,7 +141,7 @@ for i in range(numfiles):
         try:
             ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=True)
         except Exception as e:
-            print(f'Warning: something is wrong with "{filename}"...')
+            print(f'Warning: something possibly wrong with "{filename}"...')
             print(e)
             print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
             continue

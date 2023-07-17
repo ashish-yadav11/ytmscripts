@@ -1,9 +1,7 @@
-from ytmusicapi import YTMusic
-import os
 import re
-import random
-import string
+import os
 import sys
+from ytmusicapi import YTMusic
 
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"

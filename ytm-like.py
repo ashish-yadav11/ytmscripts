@@ -1,18 +1,29 @@
 #!/usr/bin/python
 
+import re
+import os
+import sys
 from ytmusicapi import YTMusic
 from yt_dlp import YoutubeDL
-import os
-import re
-import random
-import string
-import sys
 
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
+
+
+def handleexception(funcname, e):
+    print(f'Error: {funcname}() failed with the following error!')
+    print(e)
+
+def call(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except Exception as e:
+        handleexception(f.__name__, e)
+        sys.exit(1)
+
 
 def getid(source):
     idpatterns = [
@@ -36,21 +47,17 @@ def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
 
-try:
-    ytmusic = YTMusic(oauthfile)
-except Exception as e:
-    print('Error: YTMusic() failed with the following error!')
-    print(e)
-    sys.exit(1)
+ytmusic = call(YTMusic, oauthfile)
 
 # like
-song = ytmusic.get_watch_playlist(ytid, limit=1)["tracks"][0]
+song = call(ytmusic.get_watch_playlist, ytid, limit=1)["tracks"][0]
+
 if song["videoId"] != ytid:
     print("Error: something is wrong, ytid's don't match!")
     sys.exit(1)
 
 if song["likeStatus"] != "LIKE":
-    response = ytmusic.rate_song(ytid, "LIKE")
+    response = call(ytmusic.rate_song, ytid, "LIKE")
     responsetext = getresponsetext(response)
     if responsetext != "Saved to liked songs":
         print("Error: couldn't add {ytid} to liked songs!")
@@ -61,21 +68,19 @@ else:
     sys.exit(0)
 
 # add to library
-isvideo = False
-try:
+if "feedbackTokens" in song and "add" in song["feedbackTokens"]:
     addtoken = song["feedbackTokens"]["add"]
-    response = ytmusic.edit_song_library_status(addtoken)
-except:
-    isvideo = True
-if not isvideo and getresponsetext(response) != "Added to library":
-#   print(f'Warning: [{ytid}] got removed from library! Trying to fix...')
-    addtoken = song["feedbackTokens"]["remove"]
-    response = ytmusic.edit_song_library_status(addtoken)
-    responsetext = getresponsetext(response)
-    if responsetext != "Added to library":
-        print(f"Error: couldn't add [{ytid}] to library!")
-        print(f'The response was: "{responsetext}"')
-        sys.exit(1)
+    if addtoken:
+        response = call(ytmusic.edit_song_library_status, addtoken)
+        if getresponsetext(response) != "Added to library":
+            print(f'Warning: [{ytid}] got removed from library! Trying to fix...')
+            addtoken = song["feedbackTokens"]["remove"]
+            response = call(ytmusic.edit_song_library_status, addtoken)
+            responsetext = getresponsetext(response)
+            if responsetext != "Added to library":
+                print(f"Error: couldn't add [{ytid}] to library!")
+                print(f'The response was: "{responsetext}"')
+                sys.exit(1)
 
 # add to 'liked songs'
 exitcode = 0
@@ -88,11 +93,11 @@ except Exception as e:
     print()
 
 # cleanup 'unliked liked songs'
-unplylst = ytmusic.get_playlist(unplylstid, limit=9999)["tracks"]
+unplylst = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
 for song in unplylst:
     if song["videoId"] == ytid:
         print(f"Notice: removing [{ytid}] from 'Unliked Liked Songs'...")
-        ytmusic.remove_playlist_items(unplylstid, [song])
+        call(ytmusic.remove_playlist_items, unplylstid, [song])
         break
 
 # cleanup 'archive'

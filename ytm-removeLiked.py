@@ -1,15 +1,24 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic
-import os
 import re
-import random
-import string
 import sys
+from ytmusicapi import YTMusic
 
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 lkmusicdir = "/media/storage/Music"
+
+
+def handleexception(funcname, e):
+    print(f'Error: {funcname}() failed with the following error!')
+    print(e)
+
+def call(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except Exception as e:
+        handleexception(f.__name__, e)
+        sys.exit(1)
 
 
 def getid(source):
@@ -30,16 +39,11 @@ if len(sys.argv) != 2:
 ytid = getid(sys.argv[1])
 
 
-try:
-    ytmusic = YTMusic(oauthfile)
-except Exception as e:
-    print('Error: YTMusic() failed with the following error!')
-    print(e)
-    sys.exit(1)
+ytmusic = call(YTMusic, oauthfile)
 
-lkplylst = ytmusic.get_playlist(lkplylstid, limit=9999)["tracks"]
+lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]
 for song in lkplylst:
     if song["videoId"] == ytid:
         print(f"Notice: removing [{ytid}] from 'Liked Songs'...")
-        ytmusic.remove_playlist_items(lkplylstid, [song])
+        call(ytmusic.remove_playlist_items, lkplylstid, [song])
         break

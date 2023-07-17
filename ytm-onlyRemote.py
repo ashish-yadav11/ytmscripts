@@ -13,6 +13,18 @@ lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
 
 
+def handleexception(funcname, e):
+    print(f'Error: {funcname}() failed with the following error!')
+    print(e)
+
+def call(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except Exception as e:
+        handleexception(f.__name__, e)
+        sys.exit(1)
+
+
 def onlyremote(localmusicdir, remotesongs):
     localytids = []
     files = os.scandir(localmusicdir)
@@ -28,18 +40,13 @@ def onlyremote(localmusicdir, remotesongs):
             print(remotesongs[i]["title"])
             print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
 
-try:
-    ytmusic = YTMusic(oauthfile)
-except Exception as e:
-    print('Error: YTMusic() failed with the following error!')
-    print(e)
-    sys.exit(1)
+ytmusic = call(YTMusic, oauthfile)
 
 print('Liked Songs...')
-lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
+lksongs_p = call(ytmusic.get_liked_songs, limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
 onlyremote(lkmusicdir, lksongs)
 
 print('Unliked Liked Songs...')
-unsongs = ytmusic.get_playlist(unplylstid, limit=9999)["tracks"]
+unsongs = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
 onlyremote(unmusicdir, unsongs)

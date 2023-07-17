@@ -13,6 +13,18 @@ lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
 
 
+def handleexception(funcname, e):
+    print(f'Error: {funcname}() failed with the following error!')
+    print(e)
+
+def call(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except Exception as e:
+        handleexception(f.__name__, e)
+        sys.exit(1)
+
+
 def onlylocal(remotesongytids, localmusicdir):
     files = os.scandir(localmusicdir)
     localfiles = []
@@ -39,20 +51,15 @@ def onlylocal(remotesongytids, localmusicdir):
         else:
             print("Continuing...")
 
-try:
-    ytmusic = YTMusic(oauthfile)
-except Exception as e:
-    print('Error: YTMusic() failed with the following error!')
-    print(e)
-    sys.exit(1)
+ytmusic = call(YTMusic, oauthfile)
 
 print('Liked Songs...')
-lksongs_p = ytmusic.get_liked_songs(limit=9999)["tracks"]
+lksongs_p = call(ytmusic.get_liked_songs, limit=9999)["tracks"]
 lksongs = filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p)
 lkytids = [song["videoId"] for song in lksongs]
 onlylocal(lkytids, lkmusicdir)
 
 print('Unliked Liked Songs...')
-unsongs = ytmusic.get_playlist(unplylstid, limit=9999)["tracks"]
+unsongs = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
 unytids = [song["videoId"] for song in unsongs]
 onlylocal(unytids, unmusicdir)
