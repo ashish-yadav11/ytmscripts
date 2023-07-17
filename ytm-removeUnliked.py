@@ -27,7 +27,6 @@ def getid(source):
 if len(sys.argv) != 2:
     print("Error: incorrect usage!")
     sys.exit(1)
-
 ytid = getid(sys.argv[1])
 
 
@@ -47,7 +46,5 @@ for file in files:
     filename = file.name
     lclytid = filename.split(').')[0].split('(')[-1]
     if lclytid == ytid:
-        rm = input(f'Remove "{filename}"? [Y/n]: ')
-        if rm != 'n' or rm != 'N':
-            os.remove(file, os.path.join(lkmusicdir, filename))
+        os.remove(file)
         break

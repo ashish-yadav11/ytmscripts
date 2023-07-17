@@ -29,7 +29,6 @@ def getid(source):
 if len(sys.argv) != 2:
     print("Error: incorrect usage!")
     sys.exit(1)
-
 ytid = getid(sys.argv[1])
 
 
