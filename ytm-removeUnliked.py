@@ -46,5 +46,6 @@ for file in files:
     filename = file.name
     lclytid = filename.split(').')[0].split('(')[-1]
     if lclytid == ytid:
+        print(f'Notice: deleting "{filename}"...')
         os.remove(file)
         break
