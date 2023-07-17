@@ -100,7 +100,7 @@ for file in files:
     if lclytid == ytid:
         if remove:
             print(f'Notice: "{filename}" now not liked, deleting...')
-            os.remove(file, os.path.join(unmusicdir, filename))
+            os.remove(file)
         else:
             print(f'Notice: "{filename}" now not liked, moving to archive...')
             os.rename(file, os.path.join(unmusicdir, filename))
