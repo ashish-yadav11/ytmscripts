@@ -1,4 +1,3 @@
-import re
 import os
 import sys
 from ytmusicapi import YTMusic
