@@ -97,4 +97,4 @@ else:
     print("Filling up subscriptions...")
     for i in range(numchannels):
         if channellks[i] > 1:
-            subscribe(channelid)
+            subscribe(channelids[i])
