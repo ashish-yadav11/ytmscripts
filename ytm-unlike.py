@@ -86,7 +86,7 @@ if "feedbackTokens" in song and "add" in song["feedbackTokens"]:
                 print(f'The response was: "{responsetext}"')
                 sys.exit(1)
 
-# cleanup 'liked songs'
+# clean up 'liked songs'
 lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]
 for song in lkplylst:
     if song["videoId"] == ytid:
@@ -94,7 +94,7 @@ for song in lkplylst:
         call(ytmusic.remove_playlist_items, lkplylstid, [song])
         break
 
-# cleanup 'music'
+# clean up 'music'
 files = list(os.scandir(lkmusicdir))
 for file in files:
     if not file.is_file():

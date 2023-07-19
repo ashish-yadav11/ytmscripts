@@ -92,7 +92,7 @@ except Exception as e:
     print(e)
     print()
 
-# cleanup 'unliked liked songs'
+# clean up 'unliked liked songs'
 unplylst = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
 for song in unplylst:
     if song["videoId"] == ytid:
@@ -100,7 +100,7 @@ for song in unplylst:
         call(ytmusic.remove_playlist_items, unplylstid, [song])
         break
 
-# cleanup 'archive'
+# clean up 'archive'
 files = list(os.scandir(unmusicdir))
 for file in files:
     if not file.is_file():

@@ -25,7 +25,6 @@ ytmusic = call(YTMusic, oauthfile)
 
 lksongs_p = call(ytmusic.get_liked_songs, limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
-
 numlksongs = len(lksongs)
 for i in range(numlksongs):
     print(i+1, numlksongs)

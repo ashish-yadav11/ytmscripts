@@ -44,32 +44,27 @@ lkytids = [song["videoId"] for song in lksongs]
 
 print("1...")
 lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]
-lenlkplylst = len(lkplylst)
-step = 100
-num = 0
-while num < lenlkplylst:
-    print(num, lenlkplylst)
-    call(ytmusic.remove_playlist_items, lkplylstid, lkplylst[num:num+step])
-    num += step
-
+unlksongs = list(filter(lambda s: s["videoId"] not in lkytids, lkplylst))
+print("Cleaning up 'Liked Songs'...")
+if len(unlksongs) > 0:
+    call(ytmusic.remove_playlist_items, lkplylstid, unlksongs)
+lkpytids = [song["videoId"] for song in lkplylst]
+lkytids_add = list(filter(lambda s: s not in lkpytids, lkytids))
 # 'duplicates=False' misbehaves, and anyway 'duplicates=True' is irrelevant
-# because we have emptied the playlist and we know there are not duplicates in
-# lkytids
-lenlkytids = len(lkytids)
-num = 0
-while num < lenlkytids:
-    print(num, lenlkytids)
-    call(ytmusic.add_playlist_items, lkplylstid, lkytids[num:num+step], duplicates=True)
-    num += step
+# because we know there are no duplicates in lkytids_add
+print("Filling up 'Liked Songs'...")
+if (len(lkytids_add)):
+    call(ytmusic.add_playlist_items, lkplylstid, lkytids_add, duplicates=True)
 
 
 print("\n\n2...")
 unplylst = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
-unytids_p = [song["videoId"] for song in unplylst]
-nowlikedsongs = list(filter(lambda s: s["videoId"] in lkytids, unplylst))
-if len(nowlikedsongs) > 0:
-    call(ytmusic.remove_playlist_items, unplylstid, nowlikedsongs)
-unytids = list(filter(lambda s: s not in lkytids, unytids_p))
+unpytids_p = [song["videoId"] for song in unplylst]
+lkunsongs = list(filter(lambda s: s["videoId"] in lkytids, unplylst))
+print("Cleaning up 'Unliked Liked Songs'...")
+if len(lkunsongs) > 0:
+    call(ytmusic.remove_playlist_items, unplylstid, lkunsongs)
+unpytids = list(filter(lambda s: s not in lkytids, unpytids_p))
 
 
 print("\n\n3...")
@@ -82,15 +77,16 @@ for lbalbum in lbalbums:
 lbsongs = call(ytmusic.get_library_songs, limit=9999)
 notlikedlbsongs = list(filter(lambda s: s["videoId"] not in lkytids and s["videoId"] not in lbalbumytids, lbsongs))
 
+print("Filling up 'Unliked Liked Songs'...")
 numnotlikedlbsongs = len(notlikedlbsongs)
 for i in range(numnotlikedlbsongs):
     print(i+1, numnotlikedlbsongs)
     song = notlikedlbsongs[i]
     ytid = song["videoId"]
 
-    if ytid not in unytids:
+    if ytid not in unpytids:
         call(ytmusic.add_playlist_items, unplylstid, [ytid], duplicates=True)
-        unytids.append(ytid)
+        unpytids.append(ytid)
 
     if not "feedbackTokens" in song or not "add" in song["feedbackTokens"]:
         print(f"Warning: [{ytid}] isn't really in library!")
@@ -128,6 +124,7 @@ for file in files:
 print("\n\n5...")
 files = list(os.scandir(unmusicdir))
 numfiles = len(list(files))
+print("Filling up 'Unliked Liked Songs' with local archive songs...")
 for i in range(numfiles):
 #   print(i+1, numfiles)
     file = files[i]
@@ -135,7 +132,7 @@ for i in range(numfiles):
         continue
     filename = file.name
     ytid = filename.split(').')[0].split('(')[-1]
-    if ytid not in unytids:
+    if ytid not in unpytids:
         if ytid in lbalbumytids:
             print(f'Warning: "{filename}" is in some album in the library. Are you sure it should be in archives?')
         try:
