@@ -11,6 +11,8 @@ unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
 
+addtostart = True
+
 
 def handleexception(funcname, e):
     print(f'Error: {funcname}() failed with the following error!')
@@ -51,6 +53,12 @@ ytid = getid(args[1])
 def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
+
+def sortlasttofrst(plylstid):
+    plylst = call(ytmusic.get_playlist, plylstid, limit=9999)["tracks"]
+    frstid = plylst[0]['setVideoId']
+    lastid = plylst[1]['setVideoId']
+    call(ytmusic.edit_playlist, plylstid, moveItem=(lastid, frstid))
 
 ytmusic = call(YTMusic, oauthfile)
 
@@ -108,14 +116,18 @@ for file in files:
         else:
             print(f'Notice: "{filename}" now not liked, moving to archive...')
             os.rename(file, os.path.join(unmusicdir, filename))
+            addsuccessful = True
             # add to 'unliked liked songs'
             try:
                 ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
             except Exception as e:
+                addsuccessful = False
                 print("Warning: couldn't add [{ytid}] to 'Unliked Liked Songs'!")
                 print(e)
                 print()
                 sys.exit(1)
+            if addtostart and addsuccessful:
+                sortlasttofrst(unplylstid)
             break
 
 sys.exit(0)

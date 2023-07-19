@@ -12,6 +12,8 @@ unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
 unmusicdir = "/media/storage/Music/archive"
 
+addtostart = True
+
 
 def handleexception(funcname, e):
     print(f'Error: {funcname}() failed with the following error!')
@@ -46,6 +48,12 @@ ytid = getid(sys.argv[1])
 def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
+
+def sortlasttofrst(plylstid):
+    plylst = call(ytmusic.get_playlist, plylstid, limit=9999)["tracks"]
+    frstid = plylst[0]['setVideoId']
+    lastid = plylst[1]['setVideoId']
+    call(ytmusic.edit_playlist, plylstid, moveItem=(lastid, frstid))
 
 ytmusic = call(YTMusic, oauthfile)
 
@@ -83,14 +91,16 @@ if "feedbackTokens" in song and "add" in song["feedbackTokens"]:
                 sys.exit(1)
 
 # add to 'liked songs'
-exitcode = 0
+addsuccessful = True
 try:
     ytmusic.add_playlist_items(lkplylstid, [ytid], duplicates=False)
 except Exception as e:
-    exitcode = 1
+    addsuccessful = False
     print("Warning: couldn't add [{ytid}] to 'Liked Songs'!")
     print(e)
     print()
+if addtostart and addsuccessful:
+    sortlasttofrst(lkplylstid)
 
 # clean up 'unliked liked songs'
 unplylst = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
@@ -110,7 +120,7 @@ for file in files:
     if lclytid == ytid:
         print(f'Notice: "{filename}" now liked, moving to music...')
         os.rename(file, os.path.join(lkmusicdir, filename))
-        sys.exit(exitcode)
+        sys.exit(0 if addsuccessful else 1)
 
 # see if already downloaded
 found = False
@@ -144,4 +154,4 @@ if not found:
 else:
     print('Notice: song already downloaded!')
 
-sys.exit(exitcode)
+sys.exit(0 if addsuccessful else 1)

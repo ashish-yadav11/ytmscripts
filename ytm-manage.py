@@ -32,6 +32,12 @@ def call(f, *args, **kwargs):
         sys.exit(1)
 
 
+reset = False
+if len(sys.argv) > 1:
+    if sys.argv[1] == '-r':
+        reset = True
+
+
 def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
@@ -44,17 +50,34 @@ lkytids = [song["videoId"] for song in lksongs]
 
 print("1...")
 lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]
-unlksongs = list(filter(lambda s: s["videoId"] not in lkytids, lkplylst))
-print("Cleaning up 'Liked Songs'...")
-if len(unlksongs) > 0:
-    call(ytmusic.remove_playlist_items, lkplylstid, unlksongs)
-lkpytids = [song["videoId"] for song in lkplylst]
-lkytids_add = list(filter(lambda s: s not in lkpytids, lkytids))
-# 'duplicates=False' misbehaves, and anyway 'duplicates=True' is irrelevant
-# because we know there are no duplicates in lkytids_add
-print("Filling up 'Liked Songs'...")
-if (len(lkytids_add)):
-    call(ytmusic.add_playlist_items, lkplylstid, lkytids_add, duplicates=True)
+if reset:
+    lenlkplylst = len(lkplylst)
+    step = 100
+    num = 0
+    print("Cleaning up 'Liked Songs'...")
+    while num < lenlkplylst:
+        print(num, lenlkplylst)
+        call(ytmusic.remove_playlist_items, lkplylstid, lkplylst[num:num+step])
+        num += step
+    print("Filling up 'Liked Songs'...")
+    lenlkytids = len(lkytids)
+    num = 0
+    # 'duplicates=False' misbehaves, and anyway 'duplicates=True' is irrelevant
+    # because we know there can't be no duplicates
+    while num < lenlkytids:
+        print(num, lenlkytids)
+        call(ytmusic.add_playlist_items, lkplylstid, lkytids[num:num+step], duplicates=True)
+        num += step
+else:
+    unlksongs = list(filter(lambda s: s["videoId"] not in lkytids, lkplylst))
+    print("Cleaning up 'Liked Songs'...")
+    if len(unlksongs) > 0:
+        call(ytmusic.remove_playlist_items, lkplylstid, unlksongs)
+    lkpytids = [song["videoId"] for song in lkplylst]
+    lkytids_add = list(filter(lambda s: s not in lkpytids, lkytids))
+    print("Filling up 'Liked Songs'...")
+    if (len(lkytids_add)):
+        call(ytmusic.add_playlist_items, lkplylstid, lkytids_add, duplicates=True)
 
 
 print("\n\n2...")
