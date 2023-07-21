@@ -80,7 +80,7 @@ else:
     sys.exit(0)
 
 # remove from library
-if "feedbackTokens" in song and "add" in song["feedbackTokens"]:
+if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]:
     remtoken = song["feedbackTokens"]["add"]
     if remtoken:
         response = call(ytmusic.edit_song_library_status, remtoken)

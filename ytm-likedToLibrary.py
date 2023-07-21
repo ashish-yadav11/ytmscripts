@@ -30,7 +30,7 @@ for i in range(numlksongs):
     print(i+1, numlksongs)
     song = lksongs[i]
     ytid = song["videoId"]
-    if not "feedbackTokens" in song or not "remove" in song["feedbackTokens"]:
+    if not ("feedbackTokens" in song and song["feedbackTokens"] and "remove" in song["feedbackTokens"]):
         continue
     addtoken = song["feedbackTokens"]["remove"]
     if not addtoken:

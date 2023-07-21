@@ -111,7 +111,7 @@ for i in range(numnotlikedlbsongs):
         call(ytmusic.add_playlist_items, unplylstid, [ytid], duplicates=True)
         unpytids.append(ytid)
 
-    if not "feedbackTokens" in song or not "add" in song["feedbackTokens"]:
+    if not ("feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]):
         print(f"Warning: [{ytid}] isn't really in library!")
         print(f'\thttps://music.youtube.com/watch?v={ytid}')
         continue

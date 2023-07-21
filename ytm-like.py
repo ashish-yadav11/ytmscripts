@@ -76,7 +76,7 @@ else:
     sys.exit(0)
 
 # add to library
-if "feedbackTokens" in song and "add" in song["feedbackTokens"]:
+if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]:
     addtoken = song["feedbackTokens"]["add"]
     if addtoken:
         response = call(ytmusic.edit_song_library_status, addtoken)
