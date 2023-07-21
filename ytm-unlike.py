@@ -75,9 +75,6 @@ if song["likeStatus"] == "LIKE":
         print("Error: couldn't remove [{ytid}] from liked songs!")
         print(f'The response was: "{responsetext}"')
         sys.exit(1)
-else:
-    print("Notice: song already not liked!")
-    sys.exit(0)
 
 # remove from library
 if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]:

@@ -71,9 +71,6 @@ if song["likeStatus"] != "LIKE":
         print("Error: couldn't add {ytid} to liked songs!")
         print(f'The response was: "{responsetext}"')
         sys.exit(1)
-else:
-    print("Notice: song already liked!")
-    sys.exit(0)
 
 # add to library
 if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]:
@@ -137,6 +134,7 @@ if not found:
     downloadfailed = False
     # download with yt-dlp
     ydlopts = {
+        'ignoreerrors': 'only_download'
         'format': 'bestaudio/best',
         'outtmpl': {'default': '/media/storage/Music/%(title)s (%(id)s).%(ext)s'},
         'postprocessors': [{'key': 'FFmpegExtractAudio',
