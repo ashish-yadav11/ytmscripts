@@ -134,7 +134,7 @@ if not found:
     downloadfailed = False
     # download with yt-dlp
     ydlopts = {
-        'ignoreerrors': 'only_download'
+        'ignoreerrors': 'only_download',
         'format': 'bestaudio/best',
         'outtmpl': {'default': '/media/storage/Music/%(title)s (%(id)s).%(ext)s'},
         'postprocessors': [{'key': 'FFmpegExtractAudio',
