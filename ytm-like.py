@@ -67,7 +67,7 @@ if song["videoId"] != ytid:
 if song["likeStatus"] != "LIKE":
     response = call(ytmusic.rate_song, ytid, "LIKE")
     responsetext = getresponsetext(response)
-    if responsetext != "Saved to your likes":
+    if not responsetext.startswith("Saved to"):
         print("Error: couldn't add {ytid} to liked songs!")
         print(f'The response was: "{responsetext}"')
         sys.exit(1)
