@@ -52,7 +52,7 @@ def getresponsetext(resp):
 def sortlasttofrst(plylstid):
     plylst = call(ytmusic.get_playlist, plylstid, limit=9999)["tracks"]
     frstid = plylst[0]['setVideoId']
-    lastid = plylst[1]['setVideoId']
+    lastid = plylst[-1]['setVideoId']
     call(ytmusic.edit_playlist, plylstid, moveItem=(lastid, frstid))
 
 ytmusic = call(YTMusic, oauthfile)
