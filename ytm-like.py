@@ -88,9 +88,9 @@ if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedba
                 sys.exit(1)
 
 # add to 'liked songs'
-addsuccessful = True
 try:
-    ytmusic.add_playlist_items(lkplylstid, [ytid], duplicates=False)
+    response = ytmusic.add_playlist_items(lkplylstid, [ytid], duplicates=False)
+    addsuccessful = (response['status'] != 'STATUS_SUCCEEDED')
 except Exception as e:
     addsuccessful = False
     print("Warning: couldn't add [{ytid}] to 'Liked Songs'!")

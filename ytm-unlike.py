@@ -113,10 +113,10 @@ for file in files:
         else:
             print(f'Notice: "{filename}" now not liked, moving to archive...')
             os.rename(file, os.path.join(unmusicdir, filename))
-            addsuccessful = True
             # add to 'unliked liked songs'
             try:
-                ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
+                response = ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
+                addsuccessful = (response['status'] != 'STATUS_SUCCEEDED')
             except Exception as e:
                 addsuccessful = False
                 print("Warning: couldn't add [{ytid}] to 'Unliked Liked Songs'!")
