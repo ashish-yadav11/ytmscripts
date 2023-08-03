@@ -88,10 +88,12 @@ if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedba
                 sys.exit(1)
 
 # add to 'liked songs'
+exitcode = 0
 try:
     response = ytmusic.add_playlist_items(lkplylstid, [ytid], duplicates=False)
-    addsuccessful = (response['status'] != 'STATUS_SUCCEEDED')
+    addsuccessful = (response['status'] == 'STATUS_SUCCEEDED')
 except Exception as e:
+    exitcode = 1
     addsuccessful = False
     print("Warning: couldn't add [{ytid}] to 'Liked Songs'!")
     print(e)
@@ -117,7 +119,7 @@ for file in files:
     if lclytid == ytid:
         print(f'Notice: "{filename}" now liked, moving to music...')
         os.rename(file, os.path.join(lkmusicdir, filename))
-        sys.exit(0 if addsuccessful else 1)
+        sys.exit(exitcode)
 
 # see if already downloaded
 found = False
@@ -152,4 +154,4 @@ if not found:
 else:
     print('Notice: song already downloaded!')
 
-sys.exit(0 if addsuccessful else 1)
+sys.exit(exitcode)

@@ -116,7 +116,7 @@ for file in files:
             # add to 'unliked liked songs'
             try:
                 response = ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
-                addsuccessful = (response['status'] != 'STATUS_SUCCEEDED')
+                addsuccessful = (response['status'] == 'STATUS_SUCCEEDED')
             except Exception as e:
                 addsuccessful = False
                 print("Warning: couldn't add [{ytid}] to 'Unliked Liked Songs'!")
