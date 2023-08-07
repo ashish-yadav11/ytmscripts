@@ -43,6 +43,7 @@ def onlyremote(localmusicdir, remotesongs):
 ytmusic = call(YTMusic, oauthfile)
 
 print('Liked Songs...')
+# be aware, in one instance it listed 2 songs twice with differing tokens
 lksongs_p = call(ytmusic.get_liked_songs, limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))
 onlyremote(lkmusicdir, lksongs)
