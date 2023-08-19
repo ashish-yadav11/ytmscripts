@@ -106,6 +106,8 @@ for song in lkplylst:
 
 # clean up 'music'
 files = list(os.scandir(lkmusicdir))
+if remove:
+    files.extend(os.scandir(unmusicdir))
 for file in files:
     if not file.is_file():
         continue
