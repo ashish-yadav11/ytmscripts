@@ -108,6 +108,14 @@ for song in lkplylst:
 files = list(os.scandir(lkmusicdir))
 if remove:
     files.extend(os.scandir(unmusicdir))
+    # clean up 'unliked liked songs'
+    unplylst = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
+    for song in unplylst:
+        if song["videoId"] == ytid:
+            print(f"Notice: removing [{ytid}] from 'Unliked Liked Songs'...")
+            call(ytmusic.remove_playlist_items, unplylstid, [song])
+            break
+
 for file in files:
     if not file.is_file():
         continue
