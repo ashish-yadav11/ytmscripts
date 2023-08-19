@@ -50,6 +50,11 @@ if len(args) != 2:
 ytid = getid(args[1])
 
 
+unlikeresponses = [
+    "Removed from your likes",
+    "Got it, we'll tune your recommendations"
+]
+
 def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
@@ -71,7 +76,7 @@ if song["videoId"] != ytid:
 if song["likeStatus"] == "LIKE":
     response = call(ytmusic.rate_song, ytid, "INDIFFERENT")
     responsetext = getresponsetext(response)
-    if responsetext != "Removed from your likes":
+    if responsetext not in unlikeresponses:
         print("Error: couldn't remove [{ytid}] from liked songs!")
         print(f'The response was: "{responsetext}"')
         sys.exit(1)
