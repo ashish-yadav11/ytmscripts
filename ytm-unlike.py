@@ -52,6 +52,7 @@ ytid = getid(args[1])
 
 unlikeresponses = [
     "Removed from your likes",
+    "Removed from liked music",
     "Got it, we'll tune your recommendations"
 ]
 
