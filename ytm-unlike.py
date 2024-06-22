@@ -28,7 +28,7 @@ def call(f, *args, **kwargs):
 
 def getid(source):
     idpatterns = [
-        re.compile('/watch\?v=([0-9A-Za-z_-]{11})(?:&|$)'),
+        re.compile('/watch\\?v=([0-9A-Za-z_-]{11})(?:&|$)'),
         re.compile('^([0-9A-Za-z_-]{11})$')
     ]
     for pattern in idpatterns:
