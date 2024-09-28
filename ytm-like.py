@@ -59,7 +59,6 @@ ytmusic = call(YTMusic, oauthfile)
 
 # like
 song = call(ytmusic.get_watch_playlist, ytid, limit=1)["tracks"][0]
-
 if song["videoId"] != ytid:
     print("Error: something is wrong, ytid's don't match!")
     sys.exit(1)
@@ -138,7 +137,7 @@ if not found:
     ydlopts = {
         'noprogress': True,
         'format': 'bestaudio/best',
-        'outtmpl': {'default': '/media/storage/Music/%(title)s (%(id)s).%(ext)s'},
+        'outtmpl': {'default': f'{lkmusicdir}/%(title)s (%(id)s).%(ext)s'},
         'postprocessors': [{'key': 'FFmpegExtractAudio',
                             'nopostoverwrites': False,
                             'preferredcodec': 'best',

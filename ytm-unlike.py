@@ -4,6 +4,7 @@ import re
 import os
 import sys
 from ytmusicapi import YTMusic
+from yt_dlp import YoutubeDL
 
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
@@ -38,16 +39,10 @@ def getid(source):
     print(f'Error: unable to get ID from "{source}"!')
     sys.exit(1)
 
-remove = False
-args = sys.argv
-if len(args) >= 2 and args[1] == '-r':
-    remove = True
-    args = args[1:]
-
-if len(args) != 2:
+if len(sys.argv) != 2:
     print("Error: incorrect usage!")
     sys.exit(1)
-ytid = getid(args[1])
+ytid = getid(sys.argv[1])
 
 
 unlikeresponses = [
@@ -97,6 +92,20 @@ if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedba
                 print(f'The response was: "{responsetext}"')
                 sys.exit(1)
 
+# add to 'unliked liked songs'
+exitcode = 0
+try:
+    response = ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
+    addsuccessful = (response['status'] == 'STATUS_SUCCEEDED')
+except Exception as e:
+    exitcode = 1
+    addsuccessful = False
+    print("Warning: couldn't add [{ytid}] to 'Unliked Liked Songs'!")
+    print(e)
+    print()
+if addtostart and addsuccessful:
+    sortlasttofrst(lkplylstid)
+
 # clean up 'liked songs'
 lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]
 for song in lkplylst:
@@ -107,40 +116,47 @@ for song in lkplylst:
 
 # clean up 'music'
 files = list(os.scandir(lkmusicdir))
-if remove:
-    files.extend(os.scandir(unmusicdir))
-    # clean up 'unliked liked songs'
-    unplylst = call(ytmusic.get_playlist, unplylstid, limit=9999)["tracks"]
-    for song in unplylst:
-        if song["videoId"] == ytid:
-            print(f"Notice: removing [{ytid}] from 'Unliked Liked Songs'...")
-            call(ytmusic.remove_playlist_items, unplylstid, [song])
-            break
-
 for file in files:
     if not file.is_file():
         continue
     filename = file.name
     lclytid = filename.split(').')[0].split('(')[-1]
     if lclytid == ytid:
-        if remove:
-            print(f'Notice: "{filename}" now not liked, deleting...')
-            os.remove(file)
-        else:
-            print(f'Notice: "{filename}" now not liked, moving to archive...')
-            os.rename(file, os.path.join(unmusicdir, filename))
-            # add to 'unliked liked songs'
-            try:
-                response = ytmusic.add_playlist_items(unplylstid, [ytid], duplicates=False)
-                addsuccessful = (response['status'] == 'STATUS_SUCCEEDED')
-            except Exception as e:
-                addsuccessful = False
-                print("Warning: couldn't add [{ytid}] to 'Unliked Liked Songs'!")
-                print(e)
-                print()
-                sys.exit(1)
-            if addtostart and addsuccessful:
-                sortlasttofrst(unplylstid)
-            break
+        print(f'Notice: "{filename}" now not liked, moving to archive...')
+        os.rename(file, os.path.join(unmusicdir, filename))
+        sys.exit(exitcode)
 
-sys.exit(0)
+# see if already downloaded
+found = False
+files = list(os.scandir(unmusicdir))
+for file in files:
+    if not file.is_file():
+        continue
+    filename = file.name
+    lclytid = filename.split(').')[0].split('(')[-1]
+    if lclytid == ytid:
+        found = True
+        break
+if not found:
+    downloadfailed = False
+    # download with yt-dlp
+    ydlopts = {
+        'noprogress': True,
+        'format': 'bestaudio/best',
+        'outtmpl': {'default': f'{unmusicdir}/%(title)s (%(id)s).%(ext)s'},
+        'postprocessors': [{'key': 'FFmpegExtractAudio',
+                            'nopostoverwrites': False,
+                            'preferredcodec': 'best',
+                            'preferredquality': '0'}]
+        }
+    with YoutubeDL(ydlopts) as ydl:
+        try:
+            ydl.download([ytid])
+        except Exception as e:
+            print('Error: downloading failed with the following error!')
+            print(e)
+            sys.exit(1)
+else:
+    print('Notice: song already downloaded!')
+
+sys.exit(exitcode)
