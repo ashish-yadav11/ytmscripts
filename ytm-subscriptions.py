@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import sys
 from ytmusicapi import YTMusic
+import sys
 
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 
