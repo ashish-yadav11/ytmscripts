@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic
+from ytmusicapi import YTMusic, OAuthCredentials
+import json
 import sys
 
+credsfile = "/home/ashish/.config/ytmusic-creds.json"
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 
 
@@ -44,7 +46,14 @@ def unsubscribe(channelid):
         print(f'\thttps://music.youtube.com/channel/{channelid}')
         print(responsetext)
 
-ytmusic = call(YTMusic, oauthfile)
+with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
+ytmusic = call(
+    YTMusic,
+    oauthfile,
+    oauth_credentials=OAuthCredentials(
+        **{k: creds[k] for k in ("client_id", "client_secret")}
+    )
+)
 
 if clean:
     subs = call(ytmusic.get_library_subscriptions, limit=9999)

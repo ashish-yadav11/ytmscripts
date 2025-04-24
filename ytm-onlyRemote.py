@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic
+from ytmusicapi import YTMusic, OAuthCredentials
+import json
 import os
 import random
 import re
 import string
 
+credsfile = "/home/ashish/.config/ytmusic-creds.json"
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
@@ -40,7 +42,14 @@ def onlyremote(localmusicdir, remotesongs):
             print(remotesongs[i]["title"])
             print(f'\thttps://music.youtube.com/watch?v={ytid}\thttps://www.youtube.com/watch?v={ytid}')
 
-ytmusic = call(YTMusic, oauthfile)
+with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
+ytmusic = call(
+    YTMusic,
+    oauthfile,
+    oauth_credentials=OAuthCredentials(
+        **{k: creds[k] for k in ("client_id", "client_secret")}
+    )
+)
 
 print('Liked Songs...')
 # be aware, in one instance it listed 2 songs twice with differing tokens

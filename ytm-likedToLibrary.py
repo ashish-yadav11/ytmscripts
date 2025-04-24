@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic
+from ytmusicapi import YTMusic, OAuthCredentials
+import json
 
+credsfile = "/home/ashish/.config/ytmusic-creds.json"
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 
 
@@ -21,7 +23,15 @@ def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
 
-ytmusic = call(YTMusic, oauthfile)
+
+with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
+ytmusic = call(
+    YTMusic,
+    oauthfile,
+    oauth_credentials=OAuthCredentials(
+        **{k: creds[k] for k in ("client_id", "client_secret")}
+    )
+)
 
 lksongs_p = call(ytmusic.get_liked_songs, limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))

@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic
+from ytmusicapi import YTMusic, OAuthCredentials
+import json
 import os
 import re
 import sys
 
+credsfile = "/home/ashish/.config/ytmusic-creds.json"
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 lkmusicdir = "/media/storage/Music"
@@ -50,7 +52,15 @@ def getresponsetext(resp):
     resptext = list(resp["actions"][0]["addToToastAction"]["item"].values())[0]
     return list(resptext.values())[0]["runs"][0]["text"]
 
-ytmusic = call(YTMusic, oauthfile)
+
+with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
+ytmusic = call(
+    YTMusic,
+    oauthfile,
+    oauth_credentials=OAuthCredentials(
+        **{k: creds[k] for k in ("client_id", "client_secret")}
+    )
+)
 
 # unlike
 song = call(ytmusic.get_watch_playlist, ytid, limit=1)["tracks"][0]
@@ -66,6 +76,7 @@ if song["likeStatus"] == "LIKE":
         print(f'The response was: "{responsetext}"')
         sys.exit(1)
 
+""" <LIBRARY FUNCTIONS BROKEN AT THE MOMENT>
 # remove from library
 if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]:
     remtoken = song["feedbackTokens"]["add"]
@@ -80,6 +91,7 @@ if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedba
                 print(f'Error: something went wrong while removing [{ytid}] from library!')
                 print(f'The response was: "{responsetext}"')
                 sys.exit(1)
+"""
 
 # clean up 'liked songs'
 lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]

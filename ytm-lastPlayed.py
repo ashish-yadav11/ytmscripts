@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic
+from ytmusicapi import YTMusic, OAuthCredentials
+import json
 
+credsfile = "/home/ashish/.config/ytmusic-creds.json"
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 
 
@@ -17,6 +19,13 @@ def call(f, *args, **kwargs):
         sys.exit(1)
 
 
-ytmusic = call(YTMusic, oauthfile)
+with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
+ytmusic = call(
+    YTMusic,
+    oauthfile,
+    oauth_credentials=OAuthCredentials(
+        **{k: creds[k] for k in ("client_id", "client_secret")}
+    )
+)
 lastsong = call(ytmusic.get_history)[0]
 print(f'https://music.youtube.com/watch?v={lastsong["videoId"]}|{lastsong["title"]}')

@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
 from yt_dlp import YoutubeDL
-from ytmusicapi import YTMusic
+from ytmusicapi import YTMusic, OAuthCredentials
+import json
 import os
 import re
 import sys
 
+credsfile = "/home/ashish/.config/ytmusic-creds.json"
 oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
@@ -55,7 +57,15 @@ def sortlasttofrst(plylstid):
     lastid = plylst[-1]['setVideoId']
     call(ytmusic.edit_playlist, plylstid, moveItem=(lastid, frstid))
 
-ytmusic = call(YTMusic, oauthfile)
+
+with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
+ytmusic = call(
+    YTMusic,
+    oauthfile,
+    oauth_credentials=OAuthCredentials(
+        **{k: creds[k] for k in ("client_id", "client_secret")}
+    )
+)
 
 # like
 song = call(ytmusic.get_watch_playlist, ytid, limit=1)["tracks"][0]
@@ -71,6 +81,7 @@ if song["likeStatus"] != "LIKE":
         print(f'The response was: "{responsetext}"')
         sys.exit(1)
 
+""" <LIBRARY FUNCTIONS BROKEN AT THE MOMENT>
 # add to library
 if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]:
     addtoken = song["feedbackTokens"]["add"]
@@ -85,6 +96,7 @@ if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedba
                 print(f"Error: couldn't add [{ytid}] to library!")
                 print(f'The response was: "{responsetext}"')
                 sys.exit(1)
+"""
 
 # add to 'liked songs'
 exitcode = 0
