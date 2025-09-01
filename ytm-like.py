@@ -1,14 +1,13 @@
 #!/usr/bin/python
 
 from yt_dlp import YoutubeDL
-from ytmusicapi import YTMusic, OAuthCredentials
+from ytmusicapi import YTMusic
 import json
 import os
 import re
 import sys
 
-credsfile = "/home/ashish/.config/ytmusic-creds.json"
-oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
+brwsrfile = "/home/ashish/.config/ytmusic-brwsr.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 unplylstid = "PL9cE5Kd6uzpiu0WpDfY5T4rexKsYoa4E7"
 lkmusicdir = "/media/storage/Music"
@@ -58,14 +57,7 @@ def sortlasttofrst(plylstid):
     call(ytmusic.edit_playlist, plylstid, moveItem=(lastid, frstid))
 
 
-with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
-ytmusic = call(
-    YTMusic,
-    oauthfile,
-    oauth_credentials=OAuthCredentials(
-        **{k: creds[k] for k in ("client_id", "client_secret")}
-    )
-)
+ytmusic = call(YTMusic, brwsrfile)
 
 # like
 song = call(ytmusic.get_watch_playlist, ytid, limit=1)["tracks"][0]

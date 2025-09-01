@@ -1,10 +1,9 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic, OAuthCredentials
+from ytmusicapi import YTMusic
 import json
 
-credsfile = "/home/ashish/.config/ytmusic-creds.json"
-oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
+brwsrfile = "/home/ashish/.config/ytmusic-brwsr.json"
 
 
 def handleexception(funcname, e):
@@ -19,13 +18,6 @@ def call(f, *args, **kwargs):
         sys.exit(1)
 
 
-with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
-ytmusic = call(
-    YTMusic,
-    oauthfile,
-    oauth_credentials=OAuthCredentials(
-        **{k: creds[k] for k in ("client_id", "client_secret")}
-    )
-)
+ytmusic = call(YTMusic, brwsrfile)
 lastsong = call(ytmusic.get_history)[0]
 print(f'https://music.youtube.com/watch?v={lastsong["videoId"]}|{lastsong["title"]}')

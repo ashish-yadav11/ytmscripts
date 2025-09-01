@@ -1,12 +1,11 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic, OAuthCredentials
+from ytmusicapi import YTMusic
 import json
 import re
 import sys
 
-credsfile = "/home/ashish/.config/ytmusic-creds.json"
-oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
+brwsrfile = "/home/ashish/.config/ytmusic-brwsr.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 lkmusicdir = "/media/storage/Music"
 
@@ -41,14 +40,7 @@ if len(sys.argv) != 2:
 ytid = getid(sys.argv[1])
 
 
-with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
-ytmusic = call(
-    YTMusic,
-    oauthfile,
-    oauth_credentials=OAuthCredentials(
-        **{k: creds[k] for k in ("client_id", "client_secret")}
-    )
-)
+ytmusic = call(YTMusic, brwsrfile)
 
 song = call(ytmusic.get_song, ytid)
 try:

@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic, OAuthCredentials
+from ytmusicapi import YTMusic
 import json
 import sys
 
-credsfile = "/home/ashish/.config/ytmusic-creds.json"
-oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
+brwsrfile = "/home/ashish/.config/ytmusic-brwsr.json"
 
 
 def handleexception(funcname, e):
@@ -46,14 +45,7 @@ def unsubscribe(channelid):
         print(f'\thttps://music.youtube.com/channel/{channelid}')
         print(responsetext)
 
-with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
-ytmusic = call(
-    YTMusic,
-    oauthfile,
-    oauth_credentials=OAuthCredentials(
-        **{k: creds[k] for k in ("client_id", "client_secret")}
-    )
-)
+ytmusic = call(YTMusic, brwsrfile)
 
 if clean:
     subs = call(ytmusic.get_library_subscriptions, limit=9999)

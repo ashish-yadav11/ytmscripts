@@ -1,10 +1,9 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic, OAuthCredentials
+from ytmusicapi import YTMusic
 import json
 
-credsfile = "/home/ashish/.config/ytmusic-creds.json"
-oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
+brwsrfile = "/home/ashish/.config/ytmusic-brwsr.json"
 
 
 def handleexception(funcname, e):
@@ -24,14 +23,7 @@ def getresponsetext(resp):
     return list(resptext.values())[0]["runs"][0]["text"]
 
 
-with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
-ytmusic = call(
-    YTMusic,
-    oauthfile,
-    oauth_credentials=OAuthCredentials(
-        **{k: creds[k] for k in ("client_id", "client_secret")}
-    )
-)
+ytmusic = call(YTMusic, brwsrfile)
 
 lksongs_p = call(ytmusic.get_liked_songs, limit=9999)["tracks"]
 lksongs = list(filter(lambda s: s["likeStatus"] == "LIKE", lksongs_p))

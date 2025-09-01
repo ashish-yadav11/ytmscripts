@@ -1,13 +1,12 @@
 #!/usr/bin/python
 
-from ytmusicapi import YTMusic, OAuthCredentials
+from ytmusicapi import YTMusic
 import json
 import os
 import re
 import sys
 
-credsfile = "/home/ashish/.config/ytmusic-creds.json"
-oauthfile = "/home/ashish/.config/ytmusic-oauth.json"
+brwsrfile = "/home/ashish/.config/ytmusic-brwsr.json"
 lkplylstid = "PL9cE5Kd6uzpgUN5jZDyX1RvU6wQRt4co3"
 lkmusicdir = "/media/storage/Music"
 
@@ -53,14 +52,7 @@ def getresponsetext(resp):
     return list(resptext.values())[0]["runs"][0]["text"]
 
 
-with open(credsfile, 'r') as f: creds = json.load(f)["installed"]
-ytmusic = call(
-    YTMusic,
-    oauthfile,
-    oauth_credentials=OAuthCredentials(
-        **{k: creds[k] for k in ("client_id", "client_secret")}
-    )
-)
+ytmusic = call(YTMusic, brwsrfile)
 
 # unlike
 song = call(ytmusic.get_watch_playlist, ytid, limit=1)["tracks"][0]
