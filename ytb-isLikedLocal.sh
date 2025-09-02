@@ -15,10 +15,10 @@ fi
 url="${url%%&*}"
 vid="${url##*"/watch?v="}"
 
-for file in "$lkmusicdir/"*" ($vid).opus" "$lkmusicdir/"*" ($vid).m4a"; do
+for file in "$lkmusicdir/"*" ($vid)."* ; do
     [ -e "$file" ] && { echo 1; exit 0 ;}
 done
-for file in "$unmusicdir/"*" ($vid).opus" "$lkmusicdir/"*" ($vid).m4a"; do
+for file in "$unmusicdir/"*" ($vid)."* ; do
     [ -e "$file" ] && { echo 2; exit 1 ;}
 done
 echo 0; exit 2
