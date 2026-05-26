@@ -113,28 +113,14 @@ for i in range(numnotlikedlbsongs):
         call(ytmusic.add_playlist_items, unplylstid, [ytid], duplicates=True)
         unpytids.append(ytid)
 
-    """
-    if not ("feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]):
-        print(f"Warning: [{ytid}] isn't really in library!")
-        print(f'\thttps://music.youtube.com/watch?v={ytid}')
-        continue
+    if not ("feedbackTokens" in song and song["feedbackTokens"] and "remove" in song["feedbackTokens"]):
     remtoken = song["feedbackTokens"]["add"]
-    if not remtoken:
-        print(f"Warning: [{ytid}] isn't really in library!")
-        print(f'\thttps://music.youtube.com/watch?v={ytid}')
-        continue
     response = call(ytmusic.edit_song_library_status, remtoken)
-    if getresponsetext(response) != "Removed from library":
-        print(f'Warning: [{ytid}] got added to library! Trying to fix...')
-        remtoken = song["feedbackTokens"]["remove"]
-        response = call(ytmusic.edit_song_library_status, remtoken)
-        responsetext = getresponsetext(response)
-        if responsetext != "Removed from library":
-            print(f"Error: couldn't remove [{ytid}] from library!")
-            print(f'The response was: "{responsetext}"')
-            sys.exit(1)
-    """
-    print(f"Remove from library: https://music.youtube.com/watch?v={ytid}")
+    responsetext = getresponsetext(response)
+    if responsetext != "Removed from library":
+        print(f"Error: couldn't remove [{ytid}] from library!")
+        print(f'The response was: "{responsetext}"')
+        sys.exit(1)
 
 
 print("\n\n4...")

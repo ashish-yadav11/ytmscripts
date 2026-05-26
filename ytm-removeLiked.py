@@ -68,22 +68,15 @@ if song["likeStatus"] == "LIKE":
         print(f'The response was: "{responsetext}"')
         sys.exit(1)
 
-""" <LIBRARY FUNCTIONS BROKEN AT THE MOMENT>
 # remove from library
-if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]:
-    remtoken = song["feedbackTokens"]["add"]
-    if remtoken:
-        response = call(ytmusic.edit_song_library_status, remtoken)
-        if getresponsetext(response) != "Removed from library":
-            print(f'Warning: [{ytid}] got added to library! Trying to fix...')
-            remtoken = song["feedbackTokens"]["remove"]
-            response = call(ytmusic.edit_song_library_status, remtoken)
-            responsetext = getresponsetext(response)
-            if responsetext != "Removed from library":
-                print(f'Error: something went wrong while removing [{ytid}] from library!')
-                print(f'The response was: "{responsetext}"')
-                sys.exit(1)
-"""
+if "feedbackTokens" in song and song["feedbackTokens"] and "remove" in song["feedbackTokens"]:
+    remtoken = song["feedbackTokens"]["remove"]
+    response = call(ytmusic.edit_song_library_status, remtoken)
+    responsetext = getresponsetext(response)
+    if responsetext != "Removed from library":
+        print(f'Error: something went wrong while removing [{ytid}] from library!')
+        print(f'The response was: "{responsetext}"')
+        sys.exit(1)
 
 # clean up 'liked songs'
 lkplylst = call(ytmusic.get_playlist, lkplylstid, limit=9999)["tracks"]

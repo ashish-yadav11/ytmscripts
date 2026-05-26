@@ -73,22 +73,15 @@ if song["likeStatus"] != "LIKE":
         print(f'The response was: "{responsetext}"')
         sys.exit(1)
 
-""" <LIBRARY FUNCTIONS BROKEN AT THE MOMENT>
 # add to library
 if "feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]:
     addtoken = song["feedbackTokens"]["add"]
-    if addtoken:
-        response = call(ytmusic.edit_song_library_status, addtoken)
-        if getresponsetext(response) != "Added to library":
-            print(f'Warning: [{ytid}] got removed from library! Trying to fix...')
-            addtoken = song["feedbackTokens"]["remove"]
-            response = call(ytmusic.edit_song_library_status, addtoken)
-            responsetext = getresponsetext(response)
-            if responsetext != "Added to library":
-                print(f"Error: couldn't add [{ytid}] to library!")
-                print(f'The response was: "{responsetext}"')
-                sys.exit(1)
-"""
+    response = call(ytmusic.edit_song_library_status, addtoken)
+    responsetext = getresponsetext(response)
+    if responsetext != "Added to library":
+        print(f"Error: couldn't add [{ytid}] to library!")
+        print(f'The response was: "{responsetext}"')
+        sys.exit(1)
 
 # add to 'liked songs'
 exitcode = 0

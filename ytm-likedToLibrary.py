@@ -32,18 +32,12 @@ for i in range(numlksongs):
     print(i+1, numlksongs)
     song = lksongs[i]
     ytid = song["videoId"]
-    if not ("feedbackTokens" in song and song["feedbackTokens"] and "remove" in song["feedbackTokens"]):
+    if not ("feedbackTokens" in song and song["feedbackTokens"] and "add" in song["feedbackTokens"]):
         continue
-    addtoken = song["feedbackTokens"]["remove"]
-    if not addtoken:
-        continue
+    addtoken = song["feedbackTokens"]["add"]
     response = call(ytmusic.edit_song_library_status, addtoken)
-    if getresponsetext(response) != "Added to library":
-        print(f'Warning: [{ytid}] got removed from library! Trying to fix...')
-        addtoken = song["feedbackTokens"]["add"]
-        response = call(ytmusic.edit_song_library_status, addtoken)
-        responsetext = getresponsetext(response)
-        if responsetext != "Added to library":
-            print(f'Error: something went wrong while adding [{ytid}] to library!')
-            print(f'The response was: "{responsetext}"')
-            sys.exit(1)
+    responsetext = getresponsetext(response)
+    if responsetext != "Added to library":
+        print(f'Error: something went wrong while adding [{ytid}] to library!')
+        print(f'The response was: "{responsetext}"')
+        sys.exit(1)
