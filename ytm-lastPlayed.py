@@ -2,6 +2,7 @@
 
 from ytmusicapi import YTMusic
 import json
+import sys
 
 brwsrfile = "/home/ashish/.config/ytmusic-brwsr.json"
 

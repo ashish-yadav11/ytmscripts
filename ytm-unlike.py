@@ -83,11 +83,6 @@ if song["likeStatus"] == "LIKE":
 if "feedbackTokens" in song and song["feedbackTokens"] and "remove" in song["feedbackTokens"]:
     remtoken = song["feedbackTokens"]["remove"]
     response = call(ytmusic.edit_song_library_status, remtoken)
-    responsetext = getresponsetext(response)
-    if responsetext != "Removed from library":
-        print(f'Error: something went wrong while removing [{ytid}] from library!')
-        print(f'The response was: "{responsetext}"')
-        sys.exit(1)
 
 # add to 'unliked liked songs'
 exitcode = 0
